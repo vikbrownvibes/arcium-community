@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balloon Pop Name Reveal</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: linear-gradient(to bottom, #87CEEB, #E0F7FA);
+            overflow: hidden;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+        
+        .balloon {
+            position: absolute;
+            width: 80px;
+            height: 100px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+            animation: float 5s infinite ease-in-out;
+        }
+        
+        .balloon:before {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 40px;
+            width: 2px;
+            height: 30px;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        .balloon:hover {
+            transform: scale(1.1);
+        }
+        
+        .balloon.popped {
+            animation: pop 0.5s forwards;
+        }
+        
+        .name-display {
+            position: absolute;
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            width: 100%;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+        
+        @keyframes pop {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+                display: none;
+            }
+        }
+        
+        .title {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.7);
+        }
+        
+        .counter {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">Click the Balloons to Reveal Names!</h1>
+    <div class="counter">Balloons: <span id="balloon-count">0</span></div>
+    
+    <script>
+        // Array of names
+        const names = [
+            "Alex", "Jordan", "Taylor", "Morgan", "Casey", 
+            "Riley", "Jamie", "Quinn", "Avery", "Peyton",
+            "Skyler", "Dakota", "Emerson", "Rowan", "Sawyer",
+            "Charlie", "Finley", "Hayden", "Reese", "Elliot"
+        ];
+        
+        // Colors for the balloons
+        const colors = [
+            "#FF5252", "#FF4081", "#E040FB", "#7C4DFF", 
+            "#536DFE", "#448AFF", "#40C4FF", "#18FFFF", 
+            "#64FFDA", "#69F0AE", "#B2FF59", "#EEFF41", 
+            "#FFFF00", "#FFD740", "#FFAB40", "#FF6E40"
+        ];
+        
+        let balloonCount = 0;
+        const balloonContainer = document.body;
+        const balloonCounter = document.getElementById('balloon-count');
+        
+        // Function to create a new balloon
+        function createBalloon() {
+            const balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            
+            // Random position (leaving space at the edges)
+            const left = Math.random() * (window.innerWidth - 100) + 10;
+            const top = window.innerHeight + 50; // Start below the viewport
+            
+            balloon.style.left = `${left}px`;
+            balloon.style.top = `${top}px`;
+            balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Create element for name display (hidden initially)
+            const nameDisplay = document.createElement('div');
+            nameDisplay.className = 'name-display';
+            balloon.appendChild(nameDisplay);
+            
+            // Add click event
+            balloon.addEventListener('click', function() {
+                if (balloon.classList.contains('popped')) return;
+                
+                balloon.classList.add('popped');
+                balloonCount--;
+                updateCounter();
+                
+                // Show random name
+                const randomName = names[Math.floor(Math.random() * names.length)];
+                nameDisplay.textContent = randomName;
+                nameDisplay.style.opacity = '1';
+                
+                // Remove balloon after animation
+                setTimeout(() => {
+                    balloon.remove();
+                }, 1000);
+            });
+            
+            balloonContainer.appendChild(balloon);
+            balloonCount++;
+            updateCounter();
+            
+            // Animate balloon floating up
+            setTimeout(() => {
+                balloon.style.transition = 'top 6s linear';
+                balloon.style.top = `${-150}px`;
+            }, 10);
+            
+            // Remove balloon if it goes off screen
+            setTimeout(() => {
+                if (balloon.parentNode && !balloon.classList.contains('popped')) {
+                    balloon.remove();
+                    balloonCount--;
+                    updateCounter();
+                }
+            }, 6000);
+        }
+        
+        function updateCounter() {
+            balloonCounter.textContent = balloonCount;
+        }
+        
+        // Create initial balloon
+        createBalloon();
+        
+        // Create new balloon every 6 seconds
+        setInterval(createBalloon, 6000);
+        
+        // Also create balloons on click anywhere (for testing/demo purposes)
+        document.addEventListener('click', function(e) {
+            if (e.target.className !== 'balloon') {
+                // createBalloon();
+            }
+        });
+    </script>
+</body>
+</html>
