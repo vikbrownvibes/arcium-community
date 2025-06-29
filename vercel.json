@@ -9,7 +9,7 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "/index.html"  // Replace with your HTML filename if different
+      "dest": "/index.html" 
     }
   ]
 }
