@@ -1,4 +1,15 @@
 {
   "version": 2,
-  "builds": [{ "src": "package.json", "use": "@vercel/static-build" }]
+  "builds": [
+    {
+      "src": "*index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"  // Replace with your HTML filename if different
+    }
+  ]
 }
